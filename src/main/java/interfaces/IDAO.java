@@ -1,17 +1,21 @@
 package interfaces;
 
 /**
- * Interfaz
+ * Interfaz de las clases DAO
  * 
  * @author rulo
  * 
- * @param <O>
- * @param <S>
+ * @param <S> clase a definir 2
  */
-public interface IDAO<O,S> {
+public interface IDAO<S> {
 	
-	int consultarTodo();
-	
-	boolean getExiste(S s); 
+	/**
+	 * Todos los DAO deben implementar el método para comprobar si el objeto
+	 * parametrizado existe en la base de datos
+	 * 
+	 * @param s Objeto de la clase S definida en la clase DAO
+	 * @return true o false dependiendo de si el objeto existe
+	 */
+	boolean getExiste(S s);
 	
 }

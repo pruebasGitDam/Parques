@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import modelos.Parque;
 
-public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
+public class ParqueDAO extends BaseDAO implements IDAO<String> {
 
 	private final static String SELECT_POR_NOMBRE = "SELECT * FROM parques WHERE nombre_parque = ?";
 	private final static String SELECT_TODOS_ID = "SELECT id_parque FROM parques";
@@ -21,6 +21,13 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 	private static PreparedStatement ps;
 	private static ResultSet rs;
 	
+	/**
+	 * Se buscarán los parques que estén asociados a la ciudad introducida, se guardarán en una
+	 * lista y se borrarán de la base de datos.
+	 * 
+	 * @param nombreCiudad el nombre de la ciudad a la que se van a borrar los parques.
+	 * @return el número de parques que se han borrado.
+	 */
 	public static int borraParques(String nombreCiudad) {
 		int numParquesIniciales = ParqueDAO.getNumParques();
 		ArrayList<Parque> parquesAborrar = CiudadDAO.getParquesPorCiudad(nombreCiudad);
@@ -50,6 +57,13 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		return numParquesIniciales - getNumParques();
 	}
 
+	/**
+	 * Se buscará en la base de datos todos los parques cuyo nombre contenga
+	 * el patrón introducido y se devolverán en una lista.
+	 * 
+	 * @param cadena el patrón a buscar en los nombres de los parques.
+	 * @return lista con los parques.
+	 */
 	public static ArrayList<Parque> getPorCadena(String cadena) {
 		Parque parque;
 		ArrayList<Parque> parques = new ArrayList<>();
@@ -86,6 +100,13 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		return parques;
 	}
 	
+	/**
+	 * Se actualizarán los datos de un parque de la base de datos.
+	 * 
+	 * @param parqueViejo objeto de la clase Parque con los datos existentes.
+	 * @param parqueNuevo objeto de la clase Parque con los nuevos datos.
+	 * @return true o false dependiendo de si se ha actualizado el parque o no.
+	 */
 	public static boolean updateParque(Parque parqueViejo, Parque parqueNuevo) {
 		boolean actualizado = false;
 		conectar();
@@ -112,6 +133,13 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		return actualizado;
 	}
 	
+	/**
+	 * Se buscará en la base de datos si existe un parque cuyo nombre coincida con
+	 * el introducido.
+	 * 
+	 * @param nombreParque nombre del parque que se quiere consultar.
+	 * @return objeto de la clase Parque encontrado.
+	 */
 	public static Parque getParque(String nombreParque){
 		conectar();
 		Parque parque = new Parque();
@@ -142,6 +170,12 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		return parque;
 	}
 	
+	/**
+	 * Se insertará un nuevo parque en la base de datos.
+	 * 
+	 * @param parque objeto de la clase Parque con los datos del parque a insertar.
+	 * @return 0 si el parque no se ha insertado. 1 si el parque ha sido añadido a la base de datos.
+	 */
 	public static int insertarParque(Parque parque) {
 		int numParquesInsertados = getNumParques();
 		conectar();
@@ -171,6 +205,12 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		return numParquesInsertados;
 	}
 
+	/**
+	 * Se realizará un conteo de las filas que contiene la tabla parque en la base
+	 * de datos para saber cuantos parques hay.
+	 * 
+	 * @return el número de parques existentes en la base de datos.
+	 */
 	public static int getNumParques() {
 		conectar();
 		int numParques = 0;
@@ -197,6 +237,12 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		return numParques;
 	}
 
+	/**
+	 * Se recorren las filas de la tabla de parques y se guardan los ID de cada uno
+	 * en un array.
+	 * 
+	 * @return array de ID's de los parques de la base de datos.
+	 */
 	public static int[] getIDs() {
 		int[] ids = new int[getNumParques()];
 		conectar();
@@ -226,17 +272,15 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		return ids;
 	}
 
-	@Override
-	public int consultarTodo() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
+	/**
+	 * Implementación del método de la interface IDAO.
+	 * Se comprobará si existe el parque con el nombre introducido en la base de datos.
+	 * 
+	 * @param nombreParque nombre del parque a comprobar.
+	 * @return true o false dependiendo de si existe o no.
+	 */
 	@Override
 	public boolean getExiste(String nombreParque) {
-		return existeParque(nombreParque);
-	}
-	
-	private boolean existeParque(String nombreParque) {
 		conectar();
 		boolean existe = false;
 		

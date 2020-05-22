@@ -8,11 +8,7 @@ import java.util.ArrayList;
 import modelos.Ciudad;
 import modelos.Parque;
 
-/**
- *
- * @author rulo
- */
-public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
+public class CiudadDAO extends BaseDAO implements IDAO<String> {
 
 	private final static String SELECT = "SELECT id_ciudad FROM ciudades WHERE nombre_ciudad = ?";
 	private final static String SELECT_POR_ID = "SELECT * FROM ciudades WHERE id_ciudad = ?";
@@ -25,6 +21,13 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 	private static PreparedStatement ps;
 	private static ResultSet rs;
 
+	/**
+	 * Se buscarán en la base de datos todas las ciudades cuyos parques sumen una
+	 * extensión introducida y se guardarán en una lista.
+	 * 
+	 * @param extensionTotal la extensión de todos los parques.
+	 * @return lista con objetos de la clase Ciudad con las ciudades que cumplan el requisito.
+	 */
 	public static ArrayList<Ciudad> getCiuPorExt(int extensionTotal) {
 		conectar();
 
@@ -61,6 +64,14 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 		return ciudades;
 	}
 
+	/**
+	 * Se buscarán los parques asociados a una ciudad en la base de datos cuyas extensiones sean mayor
+	 * que la introducida y se guardarán en una lista.
+	 * 
+	 * @param nombreCiudad nombre de la ciudad asociada a los parques.
+	 * @param extension extensión mínima que deben tener los parques.
+	 * @return lista de objetos de la clase Parque con los que cumplan el requisito.
+	 */
 	public static ArrayList<Parque> getPorCiuYext(String nombreCiudad, int extension) {
 		conectar();
 
@@ -105,10 +116,10 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 	}
 
 	/**
-	 * Método para recuperar el nombre de una ciudad por su id
+	 * Método para recuperar el nombre de una ciudad por su id.
 	 *
-	 * @param id el id de la ciudad a consultar
-	 * @return String con el nombre de la ciudad
+	 * @param id el id de la ciudad a consultar.
+	 * @return objeto de la clase Ciudad con los datos de la ciudad encontrada.
 	 */
 	public static Ciudad getCiudadPorId(int id) {
 		conectar();
@@ -140,7 +151,14 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 		return ciudad;
 	}
 
-	public static ArrayList<Parque> getParquesPorCiudad(String city) {
+	/**
+	 * Se buscarán en la abse de datos todos los parques asociados a una ciudad y se guardarán
+	 * en una lista.
+	 * 
+	 * @param nombreCiudad el nombre de la ciudad de la que se quieren buscar los parques.
+	 * @return lista de objetos de la clase Parque con los que están asociados a la ciudad.
+	 */
+	public static ArrayList<Parque> getParquesPorCiudad(String nombreCiudad) {
 		conectar();
 
 		ArrayList<Parque> parques = new ArrayList<>();
@@ -148,7 +166,7 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 
 		try {
 			ps = conexion.prepareStatement(SELECT_POR_CIUDAD);
-			ps.setString(1, city);
+			ps.setString(1, nombreCiudad);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -183,6 +201,13 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 		return parques;
 	}
 
+	/**
+	 * Se buscarán en la abse de datos todos los parques asociados a una CCAA y se guardarán
+	 * en una lista.
+	 * 
+	 * @param CCAA el nombre de la CCAA de la que se quieren buscar los parques.
+	 * @return lista de objetos de la clase Parque con los que están asociados a la CCAA.
+	 */
 	public static ArrayList<Parque> getParquesPorCCAA(String CCAA) {
 		conectar();
 
@@ -226,6 +251,12 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 		return parques;
 	}
 
+	/**
+	 * Se buscará en la base de datos si existe una ciudad asociada al nombre introducido.
+	 * 
+	 * @param nombreCiudad nombre de la ciudad de la que se buscará el ID.
+	 * @return ID de la ciudad.
+	 */
 	public int getIdCiudad(String nombreCiudad) {
 		conectar();
 		int idCiudad = 0;
@@ -253,17 +284,15 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 		return idCiudad;
 	}
 
+	/**
+	 * Implementación del método de la interface IDAO.
+	 * Se comprobará si existe la ciudad con el nombre introducido en la base de datos.
+	 * 
+	 * @param nombreCiudad nombre de la ciudad a comprobar.
+	 * @return true o false dependiendo de si existe o no.
+	 */
 	@Override
-	public int consultarTodo() {
-		return 0;
-	}
-
-	@Override
-	public boolean getExiste(String ciudad) {
-		return existeCiudad(ciudad);
-	}
-
-	private boolean existeCiudad(String nombreCiudad) {
+	public boolean getExiste(String nombreCiudad) {
 		conectar();
 		boolean existe = false;
 
