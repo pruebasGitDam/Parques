@@ -16,60 +16,94 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 
 	private final static String SELECT = "SELECT id_ciudad FROM ciudades WHERE nombre_ciudad = ?";
 	private final static String SELECT_POR_ID = "SELECT * FROM ciudades WHERE id_ciudad = ?";
-	private final static String UPDATE = "UPDATE ciudad SET nombre = \"nuevo_nombre\"";
-	private final static String DELETE = "DELETE FROM ciudad WHERE id = 100";
-	private final static String INSERT = "INSERT INTO ciudad (id, nombre, CCAA) VALUES(100, \"nombre_ciudad\", \"nombre_CCAA\")";
 	private final static String SELECT_POR_CIUDAD = "SELECT * FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad WHERE c.nombre_ciudad = ?";
 	private final static String SELECT_POR_CCAA = "SELECT * FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad WHERE c.ccaa = ?";
-	private final static String SELECT_POR_CIU_Y_EXT = "SELECT p.nombre_parque FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad WHERE c.nombre_ciudad = ? AND p.extension > ?";	
-	
+	private final static String SELECT_POR_CIU_Y_EXT = "SELECT p.nombre_parque FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad WHERE c.nombre_ciudad = ? AND p.extension > ?";
+	private final static String SELECT_CIU_POR_EXT =
+			"SELECT c.id_ciudad, c.nombre_ciudad, c.ccaa, SUM(p.extension) FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad GROUP BY c.id_ciudad, c.nombre_ciudad, c.ccaa HAVING SUM(p.extension) > ?";
+
 	private static PreparedStatement ps;
 	private static ResultSet rs;
 
+	public static ArrayList<Ciudad> getCiuPorExt(int extensionTotal) {
+		conectar();
+
+		ArrayList<Ciudad> ciudades = new ArrayList<>();
+		Ciudad ciudad;
+
+		try {
+			ps = conexion.prepareStatement(SELECT_CIU_POR_EXT);
+			ps.setInt(1, extensionTotal);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				ciudad = new Ciudad();
+
+				ciudad.setId_ciudad(rs.getInt(1));
+				ciudad.setNombre_ciudad(rs.getString(2));
+				ciudad.setCcaa(rs.getString(3));
+
+				ciudades.add(ciudad);
+			}
+
+			ps.close();
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("Fallo en getCiuPorExt\n" + e.toString());
+		} finally {
+			try {
+				conexion.close();
+			} catch (SQLException e) {
+				System.out.println("Fallo en el finally de getCiuPorExt\n" + e.toString());
+			}
+		}
+
+		return ciudades;
+	}
+
 	public static ArrayList<Parque> getPorCiuYext(String nombreCiudad, int extension) {
 		conectar();
-		
+
 		ArrayList<Parque> parques = new ArrayList<>();
 		ArrayList<String> nombresParques = new ArrayList<>();
 		Parque parque;
-		
+
 		try {
 			ps = conexion.prepareStatement(SELECT_POR_CIU_Y_EXT);
 			ps.setString(1, nombreCiudad);
 			ps.setInt(2, extension);
 			rs = ps.executeQuery();
-			
-			while (rs.next()) {				
+
+			while (rs.next()) {
 				nombresParques.add(rs.getString(1));
 			}
-			
+
 			ps.close();
 			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Fallo en getPorCiuYext\n" + e.toString());
-		}
-		finally {
+		} finally {
 			try {
 				conexion.close();
 			} catch (SQLException e) {
 				System.out.println("Fallo en el finally de getPorCiuYext\n" + e.toString());
 			}
 		}
-		
+
 		for (String park : nombresParques) {
 			parque = new Parque();
-			
+
 			parque.setId_parque(ParqueDAO.getParque(park).getId_parque());
 			parque.setNombre_parque(ParqueDAO.getParque(park).getNombre_parque());
 			parque.setExtension(ParqueDAO.getParque(park).getExtension());
 			parque.setId_ciudad(ParqueDAO.getParque(park).getId_ciudad());
-			
+
 			parques.add(parque);
 		}
-		
+
 		return parques;
 	}
-	
+
 	/**
 	 * Método para recuperar el nombre de una ciudad por su id
 	 *
@@ -90,13 +124,12 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 				ciudad.setNombre_ciudad(rs.getString(2));
 				ciudad.setCcaa(rs.getString(3));
 			}
-			
+
 			ps.close();
 			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Fallo en getNombreCiudad\n" + e.toString());
-		}
-		finally {
+		} finally {
 			try {
 				conexion.close();
 			} catch (SQLException e) {
@@ -209,8 +242,7 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Fallo en getIdCiudad\n" + e.toString());
-		}
-		finally {
+		} finally {
 			try {
 				conexion.close();
 			} catch (SQLException e) {
@@ -230,17 +262,17 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 	public boolean getExiste(String ciudad) {
 		return existeCiudad(ciudad);
 	}
-	
+
 	private boolean existeCiudad(String nombreCiudad) {
 		conectar();
 		boolean existe = false;
-		
+
 		try {
 			ps = conexion.prepareStatement(SELECT);
 			ps.setString(1, nombreCiudad);
 			rs = ps.executeQuery();
 
-			if(rs.next()) {
+			if (rs.next()) {
 				existe = true;
 			}
 
@@ -248,8 +280,7 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Fallo en existeCiudad\n" + e.toString());
-		}
-		finally {
+		} finally {
 			try {
 				conexion.close();
 			} catch (SQLException e) {

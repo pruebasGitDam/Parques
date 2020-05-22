@@ -161,11 +161,13 @@ public class Principal {
 
 			case 7:
 				System.out.println("Introduce el nombre de la ciudad");
-				CiudadDAO.borraParques();
+				int borrados = ParqueDAO.borraParques(lecturaCad());
+				System.out.println("Se han borrado " + borrados + " parques");
 				break;
 
 			case 8:
 				System.out.println("Introduce la extensión");
+				imprimeArrays(CiudadDAO.getCiuPorExt(lecturaNum()));
 				break;
 
 		}

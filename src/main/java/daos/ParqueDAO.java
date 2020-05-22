@@ -16,35 +16,38 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 	private final static String SELECT_NUM_PAR = "SELECT * FROM parques";
 	private final static String INSERT_NUEVO = "INSERT INTO parques (id_parque, nombre_parque, extension, id_ciudad) VALUES(?, ?, ?, ?)";
 	private final static String UPDATE = "UPDATE parques SET nombre_parque = ?, extension = ?, id_ciudad = ? WHERE nombre_parque = ?";
-	private final static String SELECT_POR_CAD = "SELECT * FROM parques WHERE nombre_parque LIKE '%?%'";
-	private final static String COMMIT = "COMMIT;";
-	private final static String BORRA_PARQUES = "SET AUTOCOMMIT OFF; BEGIN DELETE FROM parques WHERE id_ciudad = (SELECT id_ciudad FROM ciudades WHERE nombre_ciudad = 'Valencia'); COMMIT; EXCEPTION WHEN OTHERS THEN ROLLBACK; END;";
+	private final static String BORRA_PARQUES = "DELETE FROM parques where id_parque = ?";
 
 	private static PreparedStatement ps;
 	private static ResultSet rs;
 	
-	public static void borraParques() {
-		conectar();
-		
-		try {
-			ps = conexion.prepareStatement(BORRA_PARQUES);
-			//ps.setString(1, nombreCiudad);
-			//ps.setInt(2, extension);
-			rs = ps.executeQuery();
+	public static int borraParques(String nombreCiudad) {
+		int numParquesIniciales = ParqueDAO.getNumParques();
+		ArrayList<Parque> parquesAborrar = CiudadDAO.getParquesPorCiudad(nombreCiudad);
+
+		parquesAborrar.forEach((object) -> {
+
+			conectar();
 			
-			ps.close();
-			rs.close();
-		} catch (SQLException e) {
-			System.out.println("Fallo en borraParques\n" + e.toString());
-		}
-		finally {
 			try {
-				conexion.close();
+				ps = conexion.prepareStatement(BORRA_PARQUES);
+				ps.setInt(1, object.getId_parque());
+				ps.executeQuery();
+
+				ps.close();
 			} catch (SQLException e) {
-				System.out.println("Fallo en el finally de borraParques\n" + e.toString());
+				System.out.println("Fallo en borraParques\n" + e.toString());
+			} finally {
+				try {
+					conexion.close();
+				} catch (SQLException e) {
+					System.out.println("Fallo en el finally de borraParques\n" + e.toString());
+				}
 			}
-		}
-	
+
+		});
+		
+		return numParquesIniciales - getNumParques();
 	}
 
 	public static ArrayList<Parque> getPorCadena(String cadena) {
