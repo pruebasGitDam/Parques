@@ -13,6 +13,9 @@ public class Principal {
 		menuPrincipal();
 	}
 
+	/**
+	 * Desde aquí se muestra el menú interacción con el usuario.
+	 */
 	private static void menuPrincipal() {
 		int opcion;
 		boolean opcionValida = false;
@@ -48,6 +51,11 @@ public class Principal {
 
 	}
 
+	/**
+	 * Según la opción elegida en el menú principal, se ejecuta un case u otro.
+	 * 
+	 * @param opcion la opción elegida en el menú principal.
+	 */
 	private static void opciones(int opcion) {
 		ArrayList<Parque> parques;
 
@@ -176,6 +184,11 @@ public class Principal {
 
 	}
 
+	/**
+	 * Método interno para realizar de forma controlada las capturas de números.
+	 * 
+	 * @return el entero introducido por teclado.
+	 */
 	private static int lecturaNum() {
 		boolean valido = false;
 		Scanner lector = new Scanner(System.in);
@@ -193,6 +206,11 @@ public class Principal {
 		return numPedido;
 	}
 
+	/**
+	 * Método interno para realizar de forma controlada las capturas de cadenas.
+	 * 
+	 * @return la cadena introducida por teclado.
+	 */
 	private static String lecturaCad() {
 		boolean valido = false;
 		Scanner lector = new Scanner(System.in);
@@ -210,6 +228,11 @@ public class Principal {
 		return cadPedida;
 	}
 
+	/**
+	 * Método interno para imprimir los datos de los objetos que contiene una lista.
+	 * 
+	 * @param arrayList lista con los objetos a imprimir.
+	 */
 	private static void imprimeArrays(ArrayList arrayList) {
 		if (arrayList.isEmpty()) {
 			System.out.println("No hay datos que mostrar");
