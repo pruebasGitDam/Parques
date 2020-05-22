@@ -72,10 +72,10 @@ public class ParqueDAO extends BaseDAO implements IDAO<String> {
 		conectar();
 		
 		try {
-			//String cad = "SELECT * FROM parques WHERE nombre_parque LIKE '%"+ cadena + "%'";
-			//ps = conexion.prepareStatement(cad);
-			ps = conexion.prepareStatement(SELECT_POR_CAD);
-			ps.setString(1, cadena);
+			String cad = "SELECT * FROM parques WHERE nombre_parque LIKE '%"+ cadena + "%'";
+			ps = conexion.prepareStatement(cad);
+			//ps = conexion.prepareStatement(SELECT_POR_CAD);
+			//ps.setString(1, cadena);
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
@@ -89,6 +89,8 @@ public class ParqueDAO extends BaseDAO implements IDAO<String> {
 				parques.add(parque);
 			}
 			
+			ps.close();
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Fallo en getPorCadena\n" + e.toString());
 		}
@@ -122,6 +124,8 @@ public class ParqueDAO extends BaseDAO implements IDAO<String> {
 			
 			rs = ps.executeQuery();
 			
+			ps.close();
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("Fallo en updateParque\n" + e.toString());
 		}
