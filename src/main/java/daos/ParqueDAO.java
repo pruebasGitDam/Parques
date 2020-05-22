@@ -9,10 +9,6 @@ import java.util.ArrayList;
 
 import modelos.Parque;
 
-/**
- *
- * @author rulo
- */
 public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 
 	private final static String SELECT_POR_NOMBRE = "SELECT * FROM parques WHERE nombre_parque = ?";
@@ -22,9 +18,34 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 	private final static String UPDATE = "UPDATE parques SET nombre_parque = ?, extension = ?, id_ciudad = ? WHERE nombre_parque = ?";
 	private final static String SELECT_POR_CAD = "SELECT * FROM parques WHERE nombre_parque LIKE '%?%'";
 	private final static String COMMIT = "COMMIT;";
-	
+	private final static String BORRA_PARQUES = "SET AUTOCOMMIT OFF; BEGIN DELETE FROM parques WHERE id_ciudad = (SELECT id_ciudad FROM ciudades WHERE nombre_ciudad = 'Valencia'); COMMIT; EXCEPTION WHEN OTHERS THEN ROLLBACK; END;";
+
 	private static PreparedStatement ps;
 	private static ResultSet rs;
+	
+	public static void borraParques() {
+		conectar();
+		
+		try {
+			ps = conexion.prepareStatement(BORRA_PARQUES);
+			//ps.setString(1, nombreCiudad);
+			//ps.setInt(2, extension);
+			rs = ps.executeQuery();
+			
+			ps.close();
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("Fallo en borraParques\n" + e.toString());
+		}
+		finally {
+			try {
+				conexion.close();
+			} catch (SQLException e) {
+				System.out.println("Fallo en el finally de borraParques\n" + e.toString());
+			}
+		}
+	
+	}
 
 	public static ArrayList<Parque> getPorCadena(String cadena) {
 		Parque parque;

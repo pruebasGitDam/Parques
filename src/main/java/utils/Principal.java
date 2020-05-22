@@ -75,6 +75,7 @@ public class Principal {
 				
 				System.out.println("Introduce el nombre de la ciudad");
 				nombreCiudad = lecturaCad();
+				
 				if (cdao.getExiste(nombreCiudad)) {
 					Parque parqueNuevo = new Parque();
 					
@@ -102,6 +103,7 @@ public class Principal {
 				
 				System.out.println("Introduce el nombre del parque");
 				String nombreParque = lecturaCad();
+				
 				if (parqueDAO.getExiste(nombreParque)) {
 					Parque nuevo = new Parque();
 					Parque viejo = ParqueDAO.getParque(nombreParque);
@@ -143,6 +145,7 @@ public class Principal {
 			case 5:
 				System.out.println("Introduce la cadena");
 				String cadena = lecturaCad();
+				
 				parques = ParqueDAO.getPorCadena(cadena);
 				imprimeArrays(parques);
 				break;
@@ -152,6 +155,7 @@ public class Principal {
 				String ciudad = lecturaCad();
 				System.out.println("Introduce la extensión");
 				int extension = lecturaNum();
+				
 				imprimeArrays(CiudadDAO.getPorCiuYext(ciudad, extension));
 				break;
 
