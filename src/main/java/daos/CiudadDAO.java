@@ -21,10 +21,83 @@ public class CiudadDAO extends BaseDAO implements IDAO<Ciudad, String> {
 	private final static String INSERT = "INSERT INTO ciudad (id, nombre, CCAA) VALUES(100, \"nombre_ciudad\", \"nombre_CCAA\")";
 	private final static String SELECT_POR_CIUDAD = "SELECT * FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad WHERE c.nombre_ciudad = ?";
 	private final static String SELECT_POR_CCAA = "SELECT * FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad WHERE c.ccaa = ?";
+	private final static String SELECT_POR_CIU_Y_EXT = "SELECT p.nombre_parque FROM parques p INNER JOIN ciudades c ON p.id_ciudad = c.id_ciudad WHERE c.nombre_ciudad = ? AND p.extension > ?";
 
+	
+	private final static String BORRA_PARQUES = "SET AUTOCOMMIT OFF; BEGIN DELETE FROM parques WHERE id_ciudad = (SELECT id_ciudad FROM ciudades WHERE nombre_ciudad = 'Valencia'); COMMIT; EXCEPTION WHEN OTHERS THEN ROLLBACK; END;";
+	
+	
 	private static PreparedStatement ps;
 	private static ResultSet rs;
+	
+	public static void borraParques() {
+		conectar();
+		
+		try {
+			ps = conexion.prepareStatement(BORRA_PARQUES);
+			//ps.setString(1, nombreCiudad);
+			//ps.setInt(2, extension);
+			rs = ps.executeQuery();
+			
+			ps.close();
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("Fallo en borraParques\n" + e.toString());
+		}
+		finally {
+			try {
+				conexion.close();
+			} catch (SQLException e) {
+				System.out.println("Fallo en el finally de borraParques\n" + e.toString());
+			}
+		}
+	
+	}
 
+	public static ArrayList<Parque> getPorCiuYext(String nombreCiudad, int extension) {
+		conectar();
+		
+		ArrayList<Parque> parques = new ArrayList<>();
+		ArrayList<String> nombresParques = new ArrayList<>();
+		Parque parque;
+		
+		try {
+			ps = conexion.prepareStatement(SELECT_POR_CIU_Y_EXT);
+			ps.setString(1, nombreCiudad);
+			ps.setInt(2, extension);
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {				
+				nombresParques.add(rs.getString(1));
+			}
+			
+			ps.close();
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("Fallo en getPorCiuYext\n" + e.toString());
+		}
+		finally {
+			try {
+				conexion.close();
+			} catch (SQLException e) {
+				System.out.println("Fallo en el finally de getPorCiuYext\n" + e.toString());
+			}
+		}
+		
+		for (String park : nombresParques) {
+			parque = new Parque();
+			
+			parque.setId_parque(ParqueDAO.getParque(park).getId_parque());
+			parque.setNombre_parque(ParqueDAO.getParque(park).getNombre_parque());
+			parque.setExtension(ParqueDAO.getParque(park).getExtension());
+			parque.setId_ciudad(ParqueDAO.getParque(park).getId_ciudad());
+			
+			parques.add(parque);
+		}
+		
+		return parques;
+	}
+	
 	/**
 	 * Método para recuperar el nombre de una ciudad por su id
 	 *

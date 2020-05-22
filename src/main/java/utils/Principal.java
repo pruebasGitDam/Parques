@@ -24,7 +24,7 @@ public class Principal {
 				+ "[3] Añadir un parque.\n"
 				+ "[4] Actualizar un parque.\n"
 				+ "[5] Seleccionar parques por cadena.\n"
-				+ "[6] Consultar parques por su extensión.\n"
+				+ "[6] Consultar parques por ciudad y extensión.\n"
 				+ "[7] Borrar parques de una ciudad.\n"
 				+ "[8] Consultar ciudades por la extensión de sus parques.\n"
 				+ "[9] Salir");
@@ -149,11 +149,15 @@ public class Principal {
 
 			case 6:
 				System.out.println("Introduce el nombre de la ciudad");
+				String ciudad = lecturaCad();
 				System.out.println("Introduce la extensión");
+				int extension = lecturaNum();
+				imprimeArrays(CiudadDAO.getPorCiuYext(ciudad, extension));
 				break;
 
 			case 7:
 				System.out.println("Introduce el nombre de la ciudad");
+				CiudadDAO.borraParques();
 				break;
 
 			case 8:

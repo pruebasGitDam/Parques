@@ -33,7 +33,6 @@ public class ParqueDAO extends BaseDAO implements IDAO<Parque, String> {
 		
 		try {
 			String cad = "SELECT * FROM parques WHERE nombre_parque LIKE '%"+ cadena + "%'";
-			//String cad = "SELECT * FROM parques WHERE nombre_parque LIKE '%"+ cadena + "%'";
 			ps = conexion.prepareStatement(cad);
 			//ps = conexion.prepareStatement(SELECT_POR_CAD);
 			//ps.setString(1, cadena);
