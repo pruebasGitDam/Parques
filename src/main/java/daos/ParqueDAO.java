@@ -17,6 +17,8 @@ public class ParqueDAO extends BaseDAO implements IDAO<String> {
 	private final static String INSERT_NUEVO = "INSERT INTO parques (id_parque, nombre_parque, extension, id_ciudad) VALUES(?, ?, ?, ?)";
 	private final static String UPDATE = "UPDATE parques SET nombre_parque = ?, extension = ?, id_ciudad = ? WHERE nombre_parque = ?";
 	private final static String BORRA_PARQUES = "DELETE FROM parques where id_parque = ?";
+	private final static String SELECT_POR_CAD = "SELECT * FROM parques WHERE nombre_parque LIKE '%?%'";
+
 
 	private static PreparedStatement ps;
 	private static ResultSet rs;
@@ -70,10 +72,10 @@ public class ParqueDAO extends BaseDAO implements IDAO<String> {
 		conectar();
 		
 		try {
-			String cad = "SELECT * FROM parques WHERE nombre_parque LIKE '%"+ cadena + "%'";
-			ps = conexion.prepareStatement(cad);
-			//ps = conexion.prepareStatement(SELECT_POR_CAD);
-			//ps.setString(1, cadena);
+			//String cad = "SELECT * FROM parques WHERE nombre_parque LIKE '%"+ cadena + "%'";
+			//ps = conexion.prepareStatement(cad);
+			ps = conexion.prepareStatement(SELECT_POR_CAD);
+			ps.setString(1, cadena);
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
