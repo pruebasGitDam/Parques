@@ -153,7 +153,8 @@ public class Principal {
 			case 5:
 				System.out.println("Introduce la cadena");
 				String cadena = lecturaCad();
-				
+				cadena = "%" + cadena + "%";
+
 				parques = ParqueDAO.getPorCadena(cadena);
 				imprimeArrays(parques);
 				break;
